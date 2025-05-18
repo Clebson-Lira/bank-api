@@ -7,6 +7,7 @@ import authRoutes from '../src/routes/auth';
 const app = express();
 app.use(express.json());
 app.use('/auth', authRoutes);
+process.env.JWT_SECRET = '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';
 
 beforeAll(async () => {
   await AppDataSource.initialize();
@@ -15,35 +16,37 @@ beforeAll(async () => {
 afterAll(async () => {
   await AppDataSource.destroy();
 });
+let uniqueEmail = '';
 
 describe('Auth Routes', () => {
   it('should register a new user', async () => {
-    const res = await request(app).post('/auth/register').send({
-      name: 'Test User',
-      email: 'test@example.com',
-      password: '123456',
-      cpf: '12345678900',
-      birthDate: '2000-01-01'
-    });
-    expect(res.status).toBe(201);
-    expect(res.body.message).toBe('Usuário registrado com sucesso.');
+  uniqueEmail = `test${Date.now()}@example.com`;
+  const res = await request(app).post('/auth/register').send({
+    fullName: 'Test User',
+    email: uniqueEmail,
+    password: '123456',
+    cpf: '12345678900',
+    birthDate: '2000-01-01'
   });
+  expect(res.status).toBe(201);
+  expect(res.body.message).toBe('Usuário cadastrado com sucesso.');
+});
 
-  it('should login with valid credentials', async () => {
-    const res = await request(app).post('/auth/login').send({
-      email: 'test@example.com',
-      password: '123456'
-    });
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
+ it('should login with valid credentials', async () => {
+  const res = await request(app).post('/auth/login').send({
+    email: uniqueEmail,
+    password: '123456'
   });
+  expect(res.status).toBe(200);
+  expect(res.body).toHaveProperty('token');
+});
 
   it('should not login with invalid credentials', async () => {
     const res = await request(app).post('/auth/login').send({
-      email: 'test@example.com',
+      email: uniqueEmail,
       password: 'wrongpassword'
     });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
     expect(res.body.message).toBe('Credenciais inválidas.');
   });
 

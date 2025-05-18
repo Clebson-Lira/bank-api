@@ -1,6 +1,8 @@
+import 'dotenv/config';
+import dotenv from 'dotenv';
 import 'reflect-metadata';
 import express from 'express';
-import dotenv from 'dotenv';
+
 import { AppDataSource } from './config/data-source';
 import authRoutes from './routes/auth';
 import accountRoutes from './routes/account';

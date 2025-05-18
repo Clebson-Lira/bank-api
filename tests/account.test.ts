@@ -17,7 +17,7 @@ beforeAll(async () => {
 
   // Cria um usuário para autenticação
   await request(app).post('/auth/register').send({
-    name: 'Test User',
+    fullName: 'Test User',
     email: 'testaccount@example.com',
     password: '123456',
     cpf: '12345678901',

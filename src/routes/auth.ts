@@ -8,12 +8,17 @@ import { Account } from '../entities/Account';
 
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecret';
+const JWT_SECRET = process.env.JWT_SECRET || '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';
 const AGENCY_DEFAULT = '1234';
 
 // Register route
 router.post('/register', async (req, res) => {
   const { email, password, fullName, cpf, birthDate } = req.body;
+
+   if (!email || !password || !fullName || !cpf || !birthDate) {
+    return res.status(400).json({ message: 'Dados incompletos.' });
+  }
+
   try {
     const userRepository = AppDataSource.getRepository(User);
     const accountRepository = AppDataSource.getRepository(Account);
@@ -57,9 +62,12 @@ router.post('/login', async (req, res) => {
     if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(401).json({ message: 'Senha incorreta.' });
+    if (!isPasswordValid) return res.status(401).json({ message: 'Credenciais inválidas.' });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    // const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+  expiresIn: "1d"
+});
 
     res.status(200).json({
       message: 'Login realizado com sucesso.',
