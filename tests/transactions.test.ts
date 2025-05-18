@@ -1,4 +1,4 @@
-// tests/routes/transactions.test.ts
+process.env.JWT_SECRET = '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';
 import request from 'supertest';
 import express from 'express';
 import { AppDataSource } from '../src/config/data-source';
@@ -11,27 +11,26 @@ app.use('/transactions', transactionRoutes);
 app.use('/auth', authRoutes);
 
 let authToken = '';
+let uniqueEmail = '';
 
 beforeAll(async () => {
   await AppDataSource.initialize();
-
-  // Cria um usuário para autenticação
+  uniqueEmail = `test${Date.now()}@example.com`;
+  
   await request(app).post('/auth/register').send({
-    name: 'Transaction User',
-    email: 'transaction@example.com',
+    fullName: 'Transaction User',
+    email: uniqueEmail,
     password: '123456',
     cpf: '12345678901',
     birthDate: '2000-01-01'
   });
 
-  // Faz login para obter o token
   const res = await request(app).post('/auth/login').send({
-    email: 'transaction@example.com',
+    email: uniqueEmail,
     password: '123456'
   });
   authToken = res.body.token;
 
-  // Realiza um depósito inicial
   await request(app).post('/account/deposit').set('Authorization', `Bearer ${authToken}`).send({ amount: 200 });
 });
 
@@ -39,7 +38,6 @@ afterAll(async () => {
   await AppDataSource.destroy();
 });
 
-// Testes para listagem de transações e filtro por período
 describe('Transaction Routes', () => {
   it('should list all transactions for an account', async () => {
     const res = await request(app)
