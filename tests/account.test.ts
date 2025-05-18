@@ -1,4 +1,4 @@
-// tests/routes/account.test.ts
+process.env.JWT_SECRET = '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';
 import request from 'supertest';
 import express from 'express';
 import { AppDataSource } from '../src/config/data-source';
@@ -10,23 +10,23 @@ app.use(express.json());
 app.use('/account', accountRoutes);
 app.use('/auth', authRoutes);
 
-let authToken = '';
 
+let authToken = '';
+let uniqueEmail = '';
 beforeAll(async () => {
   await AppDataSource.initialize();
 
-  // Cria um usuário para autenticação
+  uniqueEmail = `test${Date.now()}@example.com`;
   await request(app).post('/auth/register').send({
     fullName: 'Test User',
-    email: 'testaccount@example.com',
+    email: uniqueEmail,
     password: '123456',
     cpf: '12345678901',
     birthDate: '2000-01-01'
   });
 
-  // Faz login para obter o token
   const res = await request(app).post('/auth/login').send({
-    email: 'testaccount@example.com',
+    email: uniqueEmail,
     password: '123456'
   });
   authToken = res.body.token;
@@ -36,7 +36,6 @@ afterAll(async () => {
   await AppDataSource.destroy();
 });
 
-// Testes para depósito e saque
 describe('Account Routes', () => {
   it('should deposit money into account', async () => {
     const res = await request(app)
@@ -70,27 +69,43 @@ describe('Account Routes', () => {
     expect(res.body.message).toBe('Saldo insuficiente.');
   });
 
+    
   it('should transfer money to another account', async () => {
-    // Cria outro usuário para a transferência
+    
+    const targetEmail = `target${Date.now()}@example.com`;
     await request(app).post('/auth/register').send({
-      name: 'Target User',
-      email: 'target@example.com',
+      fullName: 'Target User',
+      email: targetEmail,
       password: '123456',
       cpf: '98765432100',
       birthDate: '1990-01-01'
     });
-
+  
+    
+    const targetLogin = await request(app).post('/auth/login').send({
+      email: targetEmail,
+      password: '123456'
+    });
+  
+    
+    const targetAccountRes = await request(app)
+      .get('/account/me')
+      .set('Authorization', `Bearer ${targetLogin.body.token}`);
+  
+    const { accountNumber, agency } = targetAccountRes.body;
+  
     const res = await request(app)
       .post('/account/transfer')
       .set('Authorization', `Bearer ${authToken}`)
       .send({
-        targetAccountNumber: 2,
-        targetAgency: '1234',
+        targetAccountNumber: String(accountNumber),
+        targetAgency: String(agency),
         amount: 25
       });
-
+    console.log('Transfer response:', res.body);
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Transferência realizada com sucesso.');
     expect(res.body.balance).toBe(25);
   });
+  
 });

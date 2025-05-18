@@ -14,7 +14,6 @@ export class AccountService {
     const account = await this.accountRepository.findOne({ where: { id: userId } });
     if (!account) throw new Error('Conta não encontrada.');
 
-    // Conversão explícita para número
     account.balance = Number(account.balance) + amount;
     await this.accountRepository.save(account);
 
@@ -51,12 +50,6 @@ export class AccountService {
     if (!senderAccount) throw new Error('Conta do remetente não encontrada.');
     if (Number(senderAccount.balance) < amount) throw new Error('Saldo insuficiente.');
 
-    // Adicione logs para depuração
-    console.log('Buscando conta destino:', {
-      accountNumber: String(targetAccountNumber),
-      agency: String(targetAgency)
-    });
-
     const receiverAccount = await this.accountRepository.findOne({
       where: {
         accountNumber: String(targetAccountNumber),
@@ -81,4 +74,16 @@ export class AccountService {
 
     return { balance: Number(senderAccount.balance) };
   }
+
+    async getAccount(userId: number) {
+        const account = await this.accountRepository.findOne({ where: { id: userId } });
+        if (!account) {
+            throw new Error('Conta não encontrada.');
+        }
+        return {
+            accountNumber: account.accountNumber,
+            agency: account.agency,
+            balance: Number(account.balance)
+        };
+    }
 }

@@ -18,7 +18,7 @@ export const depositController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido.';
-    res.status(500).json({ message: errorMessage });
+    res.status(400).json({ message: errorMessage });
   }
 };
 
@@ -35,8 +35,8 @@ export const withdrawController = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'Saque realizado com sucesso.', ...result });
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido.';
-    res.status(500).json({ message: errorMessage });
+    const errorMessage = error instanceof Error ? error.message : 'Saldo insuficiente.';
+    res.status(400).json({ message: errorMessage });
   }
 };
 
@@ -54,6 +54,21 @@ export const transferController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido.';
-    res.status(500).json({ message: errorMessage });
+    res.status(400).json({ message: errorMessage });
   }
+};
+
+export const getAccountController = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    if (typeof userId !== 'number') {
+        return res.status(401).json({ message: 'Usuário não autenticado.' });
+    }
+    
+    try {
+        const account = await accountService.getAccount(userId);
+        res.status(200).json(account);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar conta.' });
+    }
 };
