@@ -8,7 +8,7 @@ import { verifyToken } from '../middleware/authMiddleware';
 declare global {
   namespace Express {
     interface Request {
-      userId?: number;
+      userId?: string;
     }
   }
 }
@@ -18,6 +18,10 @@ const router = express.Router();
 // Get all transactions
 router.get('/', verifyToken, async (req, res) => {
   const userId = req.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'Usuário não autenticado.' });
+  }
 
   try {
     const transactionRepository = AppDataSource.getRepository(Transaction);

@@ -11,7 +11,7 @@ export class AccountService {
     if (typeof amount !== 'number' || amount <= 0) {
       throw new Error('O valor do depósito deve ser maior que zero.');
     }
-    const account = await this.accountRepository.findOne({ where: { id: userId } });
+    const account = await this.accountRepository.findOne({ where: { id: String(userId) } });
     if (!account) throw new Error('Conta não encontrada.');
 
     account.balance = Number(account.balance) + amount;
@@ -28,7 +28,7 @@ export class AccountService {
   }
 
   async withdraw({ userId, amount }: WithdrawDTO) {
-    const account = await this.accountRepository.findOne({ where: { id: userId } });
+    const account = await this.accountRepository.findOne({ where: { id: String(userId) } });
     if (!account) throw new Error('Conta não encontrada.');
     if (Number(account.balance) < amount) throw new Error('Saldo insuficiente.');
 
@@ -46,7 +46,7 @@ export class AccountService {
   }
 
   async transfer({ userId, targetAccountNumber, targetAgency, amount }: TransferDTO) {
-    const senderAccount = await this.accountRepository.findOne({ where: { id: userId } });
+    const senderAccount = await this.accountRepository.findOne({ where: { id: String(userId) } });
     if (!senderAccount) throw new Error('Conta do remetente não encontrada.');
     if (Number(senderAccount.balance) < amount) throw new Error('Saldo insuficiente.');
 
@@ -76,7 +76,7 @@ export class AccountService {
   }
 
     async getAccount(userId: number) {
-        const account = await this.accountRepository.findOne({ where: { id: userId } });
+        const account = await this.accountRepository.findOne({ where: { id: String(userId) } });
         if (!account) {
             throw new Error('Conta não encontrada.');
         }

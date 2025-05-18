@@ -10,7 +10,7 @@ export const depositController = async (req: Request, res: Response) => {
   if (typeof userId !== 'number') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
-  const depositData: DepositDTO = { userId, amount };
+  const depositData: DepositDTO = { userId: String(userId), amount };
 
   try {
     const result = await accountService.deposit(depositData);
@@ -28,7 +28,7 @@ export const withdrawController = async (req: Request, res: Response) => {
   if (typeof userId !== 'number') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
-  const withdrawData: WithdrawDTO = { userId, amount };
+  const withdrawData: WithdrawDTO = { userId: String(userId), amount };
 
   try {
     const result = await accountService.withdraw(withdrawData);
@@ -46,7 +46,7 @@ export const transferController = async (req: Request, res: Response) => {
   if (typeof userId !== 'number') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
-  const transferData: TransferDTO = { userId, targetAccountNumber, targetAgency, amount };
+  const transferData: TransferDTO = { userId: String(userId), targetAccountNumber, targetAgency, amount };
 
   try {
     const result = await accountService.transfer(transferData);

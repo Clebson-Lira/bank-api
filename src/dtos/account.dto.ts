@@ -1,13 +1,13 @@
 export interface DepositDTO {
-  userId: number;
+  userId: string;
   amount: number;
 }
 export interface WithdrawDTO {
-  userId: number;
+  userId: string;
   amount: number;
 }
 export interface TransferDTO {
-  userId: number;
+  userId: string;
   targetAccountNumber: string;
   targetAgency: string;
   amount: number;

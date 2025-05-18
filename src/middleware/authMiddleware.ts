@@ -14,7 +14,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   try {
     // Lê o segredo do JWT dinamicamente
     const JWT_SECRET = process.env.JWT_SECRET || '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';
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     req.userId = decoded.userId;
     next();
   } catch (error) {

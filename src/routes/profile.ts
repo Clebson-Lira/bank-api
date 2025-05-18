@@ -17,7 +17,7 @@ router.put('/update-password', verifyToken, async (req, res) => {
 
   try {
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { id: userId } });
+    const user = await userRepository.findOne({ where: { id: String(userId) } });
 
     if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
@@ -41,7 +41,7 @@ router.post('/upload-picture', verifyToken, upload.single('profilePicture'), asy
 
   try {
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { id: userId } });
+    const user = await userRepository.findOne({ where: { id: String(userId) } });
 
     if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
