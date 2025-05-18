@@ -7,7 +7,7 @@ const accountService = new AccountService();
 export const depositController = async (req: Request, res: Response) => {
   const { amount } = req.body;
   const userId = req.userId;
-  if (typeof userId !== 'number') {
+  if (typeof userId !== 'string') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
   const depositData: DepositDTO = { userId: String(userId), amount };
@@ -25,7 +25,7 @@ export const depositController = async (req: Request, res: Response) => {
 export const withdrawController = async (req: Request, res: Response) => {
   const { amount } = req.body;
   const userId = req.userId;
-  if (typeof userId !== 'number') {
+  if (typeof userId !== 'string') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
   const withdrawData: WithdrawDTO = { userId: String(userId), amount };
@@ -43,7 +43,7 @@ export const withdrawController = async (req: Request, res: Response) => {
 export const transferController = async (req: Request, res: Response) => {
   const { targetAccountNumber, targetAgency, amount } = req.body;
   const userId = req.userId;
-  if (typeof userId !== 'number') {
+  if (typeof userId !== 'string') {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
   const transferData: TransferDTO = { userId: String(userId), targetAccountNumber, targetAgency, amount };
@@ -60,12 +60,12 @@ export const transferController = async (req: Request, res: Response) => {
 
 export const getAccountController = async (req: Request, res: Response) => {
     const userId = req.userId;
-    if (typeof userId !== 'number') {
+    if (typeof userId !== 'string') {
         return res.status(401).json({ message: 'Usuário não autenticado.' });
     }
     
     try {
-        const account = await accountService.getAccount(userId);
+        const account = await accountService.getAccount(String(userId));
         res.status(200).json(account);
     } catch (error) {
         console.error(error);
