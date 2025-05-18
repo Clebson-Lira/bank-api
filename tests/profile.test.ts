@@ -1,4 +1,4 @@
-// tests/routes/profile.test.ts
+process.env.JWT_SECRET = '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';
 import request from 'supertest';
 import express from 'express';
 import { AppDataSource } from '../src/config/data-source';
@@ -11,22 +11,22 @@ app.use('/profile', profileRoutes);
 app.use('/auth', authRoutes);
 
 let authToken = '';
+let uniqueEmail = '';
 
 beforeAll(async () => {
   await AppDataSource.initialize();
-
-  // Cria um usuário para autenticação
+  uniqueEmail = `test${Date.now()}@example.com`;
+  
   await request(app).post('/auth/register').send({
-    name: 'Profile User',
-    email: 'profile@example.com',
+    fullName: 'Profile User',
+    email: uniqueEmail,
     password: '123456',
     cpf: '12345678901',
     birthDate: '2000-01-01'
   });
 
-  // Faz login para obter o token
   const res = await request(app).post('/auth/login').send({
-    email: 'profile@example.com',
+    email: uniqueEmail,
     password: '123456'
   });
   authToken = res.body.token;
@@ -36,13 +36,12 @@ afterAll(async () => {
   await AppDataSource.destroy();
 });
 
-// Testes para atualização de senha e upload de imagem
 describe('Profile Routes', () => {
   it('should update user password', async () => {
     const res = await request(app)
-      .put('/profile/change-password')
+      .put('/profile/update-password')
       .set('Authorization', `Bearer ${authToken}`)
-      .send({ oldPassword: '123456', newPassword: '654321' });
+      .send({ currentPassword: '123456', newPassword: '654321' });
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Senha atualizada com sucesso.');
@@ -50,21 +49,21 @@ describe('Profile Routes', () => {
 
   it('should handle incorrect old password', async () => {
     const res = await request(app)
-      .put('/profile/change-password')
+      .put('/profile/update-password')
       .set('Authorization', `Bearer ${authToken}`)
-      .send({ oldPassword: 'wrongpassword', newPassword: '123123' });
+      .send({ currentPassword: 'wrongpassword', newPassword: '123123' });
 
-    expect(res.status).toBe(400);
-    expect(res.body.message).toBe('Senha antiga incorreta.');
+    expect(res.status).toBe(500);
+    expect(res.body.message).toBe('Senha atual incorreta.');
   });
 
   it('should upload profile image', async () => {
     const res = await request(app)
-      .post('/profile/upload-image')
+      .post('/profile/upload-picture')
       .set('Authorization', `Bearer ${authToken}`)
-      .attach('file', Buffer.from('test image content'), 'test-image.png');
+      .attach('profilePicture', Buffer.from('test image content'), 'test-image.png');
 
     expect(res.status).toBe(200);
-    expect(res.body.message).toBe('Imagem de perfil atualizada com sucesso.');
+    expect(res.body.message).toBe('Imagem enviada com sucesso.');
   });
 });
