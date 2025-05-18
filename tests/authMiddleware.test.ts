@@ -1,4 +1,4 @@
-process.env.JWT_SECRET = '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';
+import dotenv from 'dotenv';
 import request from 'supertest';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -13,7 +13,7 @@ declare global {
     }
   }
 }
-
+dotenv.config();
 const app = express();
 app.use(express.json());
 

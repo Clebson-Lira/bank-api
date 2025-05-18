@@ -1,4 +1,4 @@
-// tests/routes/auth.test.ts
+import dotenv from 'dotenv';
 import request from 'supertest';
 import express from 'express';
 import { AppDataSource } from '../src/config/data-source';
@@ -7,7 +7,7 @@ import authRoutes from '../src/routes/auth';
 const app = express();
 app.use(express.json());
 app.use('/auth', authRoutes);
-process.env.JWT_SECRET = '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';
+dotenv.config();
 
 beforeAll(async () => {
   await AppDataSource.initialize();
