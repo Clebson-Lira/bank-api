@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASS || 'Abc123456',
   database: process.env.DB_NAME || 'banking_system',
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: [User, Account, Transaction],
   migrations: ['src/migrations/*.ts'],

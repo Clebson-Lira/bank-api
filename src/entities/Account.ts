@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToOne } from 'typeorm';
+import { User } from './User';
 
 @Entity('accounts')
 export class Account {
@@ -13,6 +14,9 @@ export class Account {
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   balance!: number;
+
+  @OneToOne(() => User, (user) => user.account)
+  user!: User;
 
   @CreateDateColumn()
   createdAt!: Date;
