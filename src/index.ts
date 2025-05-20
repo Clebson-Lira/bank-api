@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import { AppDataSource } from './config/data-source';
@@ -27,6 +28,7 @@ app.use('/auth', authRoutes);
 app.use('/account', accountRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/profile', profileRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 AppDataSource.initialize()
   .then(() => {

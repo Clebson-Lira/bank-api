@@ -33,4 +33,26 @@ export class ProfileService {
 
     return { message: 'Imagem enviada com sucesso.', path: filePath };
   }
+
+   async getProfile(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new Error('Usuário não encontrado.');
+    return {
+      fullName: user.fullName,
+      profilePicture: user.profilePicture
+    };
+  }
+
+  async updateProfile(userId: string, data: { fullName?: string; email?: string; profilePicture?: string }) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new Error('Usuário não encontrado.');
+
+    if (data.fullName) user.fullName = data.fullName;
+    if (data.email) user.email = data.email;
+    if (data.profilePicture) user.profilePicture = data.profilePicture;
+
+    await this.userRepository.save(user);
+
+    return { message: 'Perfil atualizado com sucesso.' };
+  }
 }
