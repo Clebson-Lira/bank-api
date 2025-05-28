@@ -25,13 +25,29 @@ Sistema bancário fictício desenvolvido com Node.js e TypeScript, que simula as
 ## 📁 Estrutura de pastas
 
 src/
-├── controllers/
-├── services/
-├── repositories/
-├── middlewares/
+├── config/
+│   └── data-source.ts
 ├── entities/
+│   ├── Account.ts
+│   ├── Transaction.ts
+│   └── User.ts
+├── middleware/
+│   └── authMiddleware.ts
+├── migrations/
+├── modules/
+│   ├── account/
+│   ├── auth/
+│   ├── profile/
+│   └── transaction/
 ├── routes/
-└── utils/
+│   ├── account.ts
+│   ├── auth.ts
+│   ├── profile.ts
+│   └── transactions.ts
+├── types/
+│   └── express.d.ts
+├── index.ts
+└── server.ts
 
 ## ⚙️ Como rodar o projeto
 
