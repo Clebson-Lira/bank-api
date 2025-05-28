@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../middleware/authMiddleware';
-import { depositController, withdrawController, transferController, getAccountController } from '../controllers/account.controller';
+import { depositController, getAccountController, transferController, withdrawController } from '../modules/account/useCases/account.controller';
 
 const router = express.Router();
 

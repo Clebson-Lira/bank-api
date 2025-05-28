@@ -21,8 +21,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-const PORT = process.env.PORT || 3000;
-
 // Rotas
 app.use('/auth', authRoutes);
 app.use('/account', accountRoutes);
@@ -30,11 +28,4 @@ app.use('/transactions', transactionRoutes);
 app.use('/profile', profileRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Data Source initialized successfully.");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => console.log("Error initializing data source: ", error));
+export { app, AppDataSource };
