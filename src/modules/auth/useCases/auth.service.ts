@@ -3,7 +3,10 @@ import jwt from 'jsonwebtoken';
 import { LoginDTO, RecoverPasswordDTO, RegisterDTO } from '../dto/auth.dto';
 import { AuthRepository } from '../repositories/auth.repository';
 
-const JWT_SECRET = process.env.JWT_SECRET || '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';
+const JWT_SECRET = process.env.JWT_SECRET as string;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET não está definida nas variáveis de ambiente.');
+}
 const AGENCY_DEFAULT = '1234';
 
 export class AuthService {
