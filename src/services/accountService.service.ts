@@ -1,92 +1,80 @@
-import { AppDataSource } from '../config/data-source';
 import { DepositDTO, TransferDTO, WithdrawDTO } from '../dtos/account.dto';
-import { Account } from '../entities/Account';
-import { Transaction } from '../entities/Transaction';
-import { User } from '../entities/User';
+import { AccountRepository } from '../repositories/account.repository';
 
 export class AccountService {
-  private accountRepository = AppDataSource.getRepository(Account);
-  private transactionRepository = AppDataSource.getRepository(Transaction);
+  private readonly repository = new AccountRepository();
 
- async deposit({ userId, amount }: DepositDTO) {
+  async deposit({ userId, amount }: DepositDTO) {
     if (typeof amount !== 'number' || amount <= 0) {
       throw new Error('O valor do depósito deve ser maior que zero.');
     }
-    const user = await AppDataSource.getRepository(User).findOne({ where: { id: String(userId) }, relations: ['account'] });
+
+    const user = await this.repository.findUserWithAccount(userId);
     if (!user || !user.account) throw new Error('Conta não encontrada.');
-    const account = user.account;
 
-    account.balance = Number(account.balance) + amount;
-    await this.accountRepository.save(account);
+    user.account.balance += amount;
+    await this.repository.saveAccount(user.account);
 
-    const transaction = this.transactionRepository.create({
-      account,
+    await this.repository.createAndSaveTransaction({
+      account: user.account,
       type: 'deposit',
       amount
     });
-    await this.transactionRepository.save(transaction);
 
-    return { balance: Number(account.balance) };
+    return { balance: user.account.balance };
   }
 
   async withdraw({ userId, amount }: WithdrawDTO) {
-    const user = await AppDataSource.getRepository(User).findOne({ where: { id: String(userId) }, relations: ['account'] });
+    const user = await this.repository.findUserWithAccount(userId);
     if (!user || !user.account) throw new Error('Conta não encontrada.');
-    if (Number(user.account.balance) < amount) throw new Error('Saldo insuficiente.');
+    if (user.account.balance < amount) throw new Error('Saldo insuficiente.');
 
-    user.account.balance = Number(user.account.balance) - amount;
-    await this.accountRepository.save(user.account);
+    user.account.balance -= amount;
+    await this.repository.saveAccount(user.account);
 
-    const transaction = this.transactionRepository.create({
+    await this.repository.createAndSaveTransaction({
       account: user.account,
       type: 'withdrawal',
       amount
     });
-    await this.transactionRepository.save(transaction);
 
-    return { balance: Number(user.account.balance) };
+    return { balance: user.account.balance };
   }
 
   async transfer({ userId, targetAccountNumber, targetAgency, amount }: TransferDTO) {
-   const senderUser = await AppDataSource.getRepository(User).findOne({ where: { id: String(userId) }, relations: ['account'] });
+    const senderUser = await this.repository.findUserWithAccount(userId);
     if (!senderUser || !senderUser.account) throw new Error('Conta do remetente não encontrada.');
     const senderAccount = senderUser.account;
-    if (Number(senderAccount.balance) < amount) throw new Error('Saldo insuficiente.');
 
-    const receiverAccount = await this.accountRepository.findOne({
-      where: {
-        accountNumber: String(targetAccountNumber),
-        agency: String(targetAgency)
-      }
-    });
+    if (senderAccount.balance < amount) throw new Error('Saldo insuficiente.');
+
+    const receiverAccount = await this.repository.findAccountByNumberAndAgency(targetAccountNumber, targetAgency);
     if (!receiverAccount) throw new Error('Conta de destino não encontrada.');
 
-    senderAccount.balance = Number(senderAccount.balance) - amount;
-    receiverAccount.balance = Number(receiverAccount.balance) + amount;
+    senderAccount.balance -= amount;
+    receiverAccount.balance += amount;
 
-    await this.accountRepository.save(senderAccount);
-    await this.accountRepository.save(receiverAccount);
+    await this.repository.saveAccount(senderAccount);
+    await this.repository.saveAccount(receiverAccount);
 
-    const transaction = this.transactionRepository.create({
+    await this.repository.createAndSaveTransaction({
       account: senderAccount,
       type: 'transfer',
       amount,
       targetAccount: receiverAccount.accountNumber
     });
-    await this.transactionRepository.save(transaction);
 
-    return { balance: Number(senderAccount.balance) };
+    return { balance: senderAccount.balance };
   }
 
-    async getAccount(userId: string) {
-        const user = await AppDataSource.getRepository(User).findOne({ where: { id: String(userId) }, relations: ['account'] });
-        if (!user || !user.account) {
-            throw new Error('Conta não encontrada.');
-        }
-        return {
-            accountNumber: user.account.accountNumber,
-            agency: user.account.agency,
-            balance: Number(user.account.balance)
-        };
-    }
+  async getAccount(userId: string) {
+    const user = await this.repository.findUserWithAccount(userId);
+    if (!user || !user.account) throw new Error('Conta não encontrada.');
+
+    return {
+      accountNumber: user.account.accountNumber,
+      agency: user.account.agency,
+      balance: user.account.balance
+    };
+  }
 }

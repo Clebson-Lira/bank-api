@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt';
-import { AppDataSource } from '../config/data-source';
-import { User } from '../entities/User';
 import { UpdatePasswordDTO, UploadPictureDTO } from '../dtos/profile.dto';
+import { UserRepository } from '../repositories/user.repository';
 
 export class ProfileService {
-  private userRepository = AppDataSource.getRepository(User);
+  private userRepository = new UserRepository();
 
   async updatePassword(userId: string, data: UpdatePasswordDTO) {
     const { currentPassword, newPassword } = data;
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findById(userId);
     if (!user) throw new Error('Usuário não encontrado.');
 
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
@@ -17,6 +16,7 @@ export class ProfileService {
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedNewPassword;
+
     await this.userRepository.save(user);
 
     return { message: 'Senha atualizada com sucesso.' };
@@ -25,7 +25,7 @@ export class ProfileService {
   async uploadPicture(userId: string, data: UploadPictureDTO) {
     const { filePath } = data;
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findById(userId);
     if (!user) throw new Error('Usuário não encontrado.');
 
     user.profilePicture = filePath;
@@ -34,9 +34,10 @@ export class ProfileService {
     return { message: 'Imagem enviada com sucesso.', path: filePath };
   }
 
-   async getProfile(userId: string) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+  async getProfile(userId: string) {
+    const user = await this.userRepository.findById(userId);
     if (!user) throw new Error('Usuário não encontrado.');
+
     return {
       fullName: user.fullName,
       profilePicture: user.profilePicture
@@ -44,7 +45,7 @@ export class ProfileService {
   }
 
   async updateProfile(userId: string, data: { fullName?: string; email?: string; profilePicture?: string }) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findById(userId);
     if (!user) throw new Error('Usuário não encontrado.');
 
     if (data.fullName) user.fullName = data.fullName;
