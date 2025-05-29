@@ -1,3 +1,4 @@
+import'dotenv/config';
 import { DataSource } from 'typeorm';
 import path from 'path';
 import winston from 'winston';
@@ -23,8 +24,10 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: false,
   logging: false,
-  entities: [ __dirname + '/entities/*.{js,ts}',
-        path.join(__dirname, '..', 'modules', '**', '*.entity.{js,ts}'),],
+  entities: [
+  path.join(__dirname, '..', 'entities', '*.ts'),
+  path.join(__dirname, '..', 'modules', '**', '*.entity.ts')
+],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],
 });

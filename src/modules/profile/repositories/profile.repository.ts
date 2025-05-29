@@ -5,7 +5,7 @@ export class ProfileRepository {
   private userRepository = AppDataSource.getRepository(User);
 
   findById(id: string) {
-    return this.userRepository.findOne({ where: { id } });
+     return this.userRepository.findOne({ where: { id }, relations: ['account'] });
   }
 
   async save(user: User) {

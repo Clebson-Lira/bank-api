@@ -12,7 +12,7 @@ export class AccountService {
     const user = await this.repository.findUserWithAccount(userId);
     if (!user || !user.account) throw new Error('Conta não encontrada.');
 
-    user.account.balance += amount;
+    user.account.balance = Number(user.account.balance) + amount;
     await this.repository.saveAccount(user.account);
 
     await this.repository.createAndSaveTransaction({
@@ -29,7 +29,7 @@ export class AccountService {
     if (!user || !user.account) throw new Error('Conta não encontrada.');
     if (user.account.balance < amount) throw new Error('Saldo insuficiente.');
 
-    user.account.balance -= amount;
+    user.account.balance = Number(user.account.balance) - amount;
     await this.repository.saveAccount(user.account);
 
     await this.repository.createAndSaveTransaction({
@@ -51,8 +51,8 @@ export class AccountService {
     const receiverAccount = await this.repository.findAccountByNumberAndAgency(targetAccountNumber, targetAgency);
     if (!receiverAccount) throw new Error('Conta de destino não encontrada.');
 
-    senderAccount.balance -= amount;
-    receiverAccount.balance += amount;
+    senderAccount.balance = Number(senderAccount.balance) - amount;
+    receiverAccount.balance = Number(receiverAccount.balance) + amount;
 
     await this.repository.saveAccount(senderAccount);
     await this.repository.saveAccount(receiverAccount);
