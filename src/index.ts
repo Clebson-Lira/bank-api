@@ -9,6 +9,8 @@ import authRoutes from './routes/auth';
 import accountRoutes from './routes/account';
 import transactionRoutes from './routes/transactions';
 import profileRoutes from './routes/profile';
+import { swaggerOptions } from './config/swagger';
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 
@@ -27,5 +29,6 @@ app.use('/account', accountRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/profile', profileRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 
 export { app, AppDataSource };
