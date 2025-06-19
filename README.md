@@ -36,28 +36,57 @@ Sistema bancário desenvolvido com **Node.js** e **TypeScript**, seguindo boas p
 
 ```
 src/
-├── config/              # Conexão e configs do TypeORM
-├── entities/            # Entidades do banco de dados
+├── config/              # TypeORM connection and configs
+├── entities/            # Database entities
 │   ├── Account.ts
 │   ├── Transaction.ts
 │   └── User.ts
-├── middleware/          # Middlewares globais (ex: autenticação)
+├── middleware/          # Global middlewares (e.g., authentication)
 │   └── authMiddleware.ts
-├── migrations/          # Migrations do TypeORM
-├── modules/             # Módulos organizados por domínio
+├── migrations/          # TypeORM migrations
+├── modules/             # Modules organized by domain
 │   ├── account/
+│   │   ├── controllers/
+│   │   ├── dto/
+│   │   ├── repositories/
+│   │   ├── useCases/
+│   │   └── validators/
 │   ├── auth/
+│   │   ├── controllers/
+│   │   ├── dto/
+│   │   ├── repositories/
+│   │   ├── useCases/
+│   │   └── validators/
 │   ├── profile/
+│   │   ├── controllers/
+│   │   ├── dto/
+│   │   ├── repositories/
+│   │   ├── useCases/
+│   │   └── validators/
 │   └── transaction/
-├── routes/              # Definição de rotas REST
-│   ├── conta.ts
+│       ├── controllers/
+│       ├── dto/
+│       ├── repositories/
+│       ├── useCases/
+│       └── validators/
+├── routes/              # REST route definitions
+│   ├── account.ts
 │   ├── auth.ts
-│   ├── perfil.ts
-│   └── transacoes.ts
-├── tipos/               # Tipagens adicionais
+│   ├── profile.ts
+│   └── transactions.ts
+├── types/               # Additional typings
 │   └── express.d.ts
 ├── index.ts             # Entry point
-└── servidor.ts          # Configuração do servidor Express
+└── server.ts            # Express server configuration
+
+logs/                    # Application logs
+uploads/                 # Uploaded files (e.g., profile images)
+tests/                   # Automated tests
+.env                     # Environment variables
+.env.example             # Example environment variables
+package.json
+README.md
+tsconfig.json
 ```
 
 ---
