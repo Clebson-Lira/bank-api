@@ -1,6 +1,6 @@
 # 💰 Bank API — Sistema Bancário Fictício
 
-Sistema bancário desenvolvido com **Node.js** e **TypeScript**, seguindo boas práticas de arquitetura modular, autenticação segura com JWT, documentação Swagger e validações robustas com Zod. Idealizado para simular as principais operações de uma conta bancária real.
+Sistema bancário desenvolvido com **Node.js** e **TypeScript**, seguindo boas práticas de arquitetura modular, autenticação segura com JWT, documentação Swagger. Idealizado para simular as principais operações de uma conta bancária real.
 
 ---
 
@@ -25,7 +25,6 @@ Sistema bancário desenvolvido com **Node.js** e **TypeScript**, seguindo boas p
 - **MySQL** — Banco de dados relacional
 - **Bcrypt** — Hash de senhas
 - **JWT** — Autenticação baseada em token
-- **Zod** — Validação de dados
 - **Multer** — Upload de arquivos (imagem de perfil)
 - **Swagger (JSDoc)** — Documentação da API
 - **Vitest** — Testes unitários e de integração
