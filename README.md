@@ -46,29 +46,21 @@ src/
 ├── migrations/          # TypeORM migrations
 ├── modules/             # Modules organized by domain
 │   ├── account/
-│   │   ├── controllers/
 │   │   ├── dto/
 │   │   ├── repositories/
 │   │   ├── useCases/
-│   │   └── validators/
 │   ├── auth/
-│   │   ├── controllers/
 │   │   ├── dto/
 │   │   ├── repositories/
 │   │   ├── useCases/
-│   │   └── validators/
 │   ├── profile/
-│   │   ├── controllers/
 │   │   ├── dto/
 │   │   ├── repositories/
 │   │   ├── useCases/
-│   │   └── validators/
 │   └── transaction/
-│       ├── controllers/
 │       ├── dto/
 │       ├── repositories/
 │       ├── useCases/
-│       └── validators/
 ├── routes/              # REST route definitions
 │   ├── account.ts
 │   ├── auth.ts
